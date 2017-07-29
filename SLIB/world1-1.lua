@@ -84,10 +84,88 @@ local trawaSheetOptions = {
     }
 }
 
+local guzikSheetOptions = {
+    frames = {
+        {   -- 1. lewo
+            x = 0,
+            y = 0,
+            width = 100,
+            height = 100,
+			sourceX = 0,
+            sourceY = 0,
+            sourceWidth = 0,
+            sourceHeight = 0
+        },
+        {   -- 1. prawo
+            x = 100,
+            y = 0,
+            width = 100,
+            height = 100,
+			sourceX = 0,
+            sourceY = 0,
+            sourceWidth = 0,
+            sourceHeight = 0
+        },
+        {   -- 1. a
+            x = 200,
+            y = 0,
+            width = 100,
+            height = 100,
+			sourceX = 0,
+            sourceY = 0,
+            sourceWidth = 0,
+            sourceHeight = 0
+        },
+        {   -- 1. b
+            x = 300,
+            y = 0,
+            width = 100,
+            height = 100,
+			sourceX = 0,
+            sourceY = 0,
+            sourceWidth = 0,
+            sourceHeight = 0
+        },
+        
+    }
+}
+
 local trawaSheet = graphics.newImageSheet( "images/Ground.png", trawaSheetOptions )
+local guzikSheet = graphics.newImageSheet( "images/Guziouki.png", guzikSheetOptions )
 
 local loras
 local trawa
+local backGroup
+local grassGroup
+local mainGroup
+local uiGroup
+
+-- -----------------------------------------------------------------------------------
+-- Mosaks functions
+-- -----------------------------------------------------------------------------------
+
+function makeGrass()
+    for i=1,20,1 do
+        trawa = display.newImage( grassGroup, trawaSheet, 1, 38 + 76*(i-1), display.actualContentHeight-40) 
+        physics.addBody(trawa,"static")
+    end
+end
+
+function makeButtons()
+
+    guzikLewo = display.newImage( uiGroup, guzikSheet, 1, 80, display.actualContentHeight-80) 
+    guzikLewo.alpha = 0.7
+
+    guzikPrawo = display.newImage( uiGroup, guzikSheet, 2, 210, display.actualContentHeight-80) 
+    guzikPrawo.alpha = 0.7
+
+    guzikA = display.newImage( uiGroup, guzikSheet, 3, display.actualContentWidth-210, display.actualContentHeight-80) 
+    guzikA.alpha = 0.7
+
+    guzikB = display.newImage( uiGroup, guzikSheet, 4, display.actualContentWidth-80, display.actualContentHeight-80) 
+    guzikB.alpha = 0.7
+
+end
 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -121,13 +199,8 @@ function scene:create( event )
 	--background.width = display.actualContentWidth
     --background.height = display.actualContentHeight
 
-    for i=1,20,1 do
-        trawa = display.newImage( mainGroup, trawaSheet, 1, 38 + 76*(i-1), display.actualContentHeight-40) 
-        physics.addBody(trawa,"static")
-        grassGroup:insert(trawa)
-    end
-
-    
+    makeGrass()
+    makeButtons()
 
 	loras = display.newSprite(mainGroup, lorasSheet, lorasSequences)
 	loras.x = 640--250
