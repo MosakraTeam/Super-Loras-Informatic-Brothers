@@ -175,7 +175,8 @@ local smoothJump = 10
 
 --move world variables
 
-local lorasCanMoveRight = true;
+local lorasCanMoveRight = true
+local lorasCanMoveLeft = true
 local worldOffset = 0
 
 --other
@@ -307,11 +308,21 @@ function stopLorasStartWorld()
     end
 end
 
+function stopLorasOnLeft()
+    if loras.x <= loras.width/2 then
+        lorasCanMoveLeft = false
+    else
+        lorasCanMoveLeft = true
+    end
+end
+
 function leftRightLoop()
     if not goLeft and not goRight and offset > 0 then
 
-        if lastMove == 'lewo' then
-            loras.x = loras.x - offset
+        if lorasCanMoveLeft then
+            if lastMove == 'lewo' then
+                loras.x = loras.x - offset
+            end
         end
 
         if lorasCanMoveRight then
@@ -328,7 +339,9 @@ function leftRightLoop()
         offset = offset - 0.5
     end
 
-    if goLeft then loras.x = loras.x - offset end
+    if lorasCanMoveLeft then
+        if goLeft then loras.x = loras.x - offset end
+    end
 
     if lorasCanMoveRight then
         if goRight then loras.x = loras.x + offset end
@@ -364,6 +377,7 @@ function jumpingLoop()
 end
 
 local function gameLoop()
+    stopLorasOnLeft()
     stopLorasStartWorld()
     leftRightLoop()
     jumpingLoop()
