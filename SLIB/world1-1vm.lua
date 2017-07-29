@@ -173,6 +173,10 @@ local jumpoff = 0
 local jumpMove = 'down'
 local smoothJump = 10
 
+--move world variables
+
+local lorasCanMove = true;
+
 --other
 
 -- -----------------------------------------------------------------------------------
@@ -287,22 +291,34 @@ end
 -- Main Loop functions
 -- -----------------------------------------------------------------------------------
 
+function stopLorasStartWorld()
+    if loras.x >= display.actualContentWidth * 0.66 then
+        lorasCanMove = false
+    else
+        lorasCanMove = true
+    end
+end
+
 function leftRightLoop()
     if not goLeft and not goRight and offset > 0 then
+
         if lastMove == 'lewo' then
             loras.x = loras.x - offset
         end
 
-        if lastMove == 'prawo' then
-            loras.x = loras.x + offset
+        if lorasCanMove then
+            if lastMove == 'prawo' then
+                loras.x = loras.x + offset
+            end
         end
 
         offset = offset - 0.5
-        print(offset)
-        print(lastMove)
-        print(goRight)
-        print(goLeft)
-        print('------------------------------------------')
+    end
+
+    if goLeft then loras.x = loras.x - offset end
+    
+    if lorasCanMove then
+        if goRight then loras.x = loras.x + offset end
     end
 
     if not goLeft and not goRight and offset <= 0 then
@@ -310,9 +326,6 @@ function leftRightLoop()
         loras:pause()
         loras:setFrame(1)
     end
-
-	if goLeft then loras.x = loras.x - offset end
-    if goRight then loras.x = loras.x + offset end
 end
 
 function jumpingLoop()
@@ -329,12 +342,11 @@ function jumpingLoop()
             end
             loras.y = loras.y + smoothJump
         end
-        print(goJump)
-        print('------------------------------------------')
     end
 end
 
 local function gameLoop()
+    stopLorasStartWorld()
     leftRightLoop()
     jumpingLoop()
 end
