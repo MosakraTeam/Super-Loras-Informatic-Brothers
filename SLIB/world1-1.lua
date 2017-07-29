@@ -5,6 +5,8 @@ local scene = composer.newScene()
 
 local physics = require( "physics" )
 physics.start()
+physics.setGravity( 0, 0 )
+
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
@@ -144,11 +146,13 @@ local gameLoopTimer
 
 local goLeft = false
 local goRight = false
-local lastMove = 'lewo'
-
-local goJump = false
-
+local lastMove = 'mlem'
 local offset = 10
+
+local goJump = true
+local jumpoff = 0
+local jumpMove = 'down'
+local smoothJump = 10
 
 -- -----------------------------------------------------------------------------------
 -- Mosaks functions
@@ -159,6 +163,8 @@ local function gameLoop()
 
     local x, y = loras:getMassLocalCenter()
 
+-- -----------------------------------------------------------------------------------
+-- lewo, prwo
     if not goLeft and not goRight and offset > 0 then
         if lastMove == 'lewo' then
             loras.x = loras.x - offset
@@ -169,16 +175,47 @@ local function gameLoop()
         end
 
         offset = offset - 0.5
+        print(offset)
+        print(lastMove)
+        print(goRight)
+        print(goLeft)
+        print('------------------------------------------')
+    end
+
+    if not goLeft and not goRight and offset <= 0 then
+        loras:setSequence( "run" )  -- switch to "idle" sequence
+        loras:pause()
+        loras:setFrame(1)
     end
 
 	if goLeft then loras.x = loras.x - offset end
     if goRight then loras.x = loras.x + offset end
+-- ------------------------------------------------------------------------------------
+-- skok
+    if goJump then
+        if jumpMove == 'up' then 
+            if loras.y <= jumpoff + 55 then 
+                smoothJump = smoothJump - 1
+            end
+            loras.y = loras.y - smoothJump
+            if loras.y <= jumpoff then jumpMove = 'down' end
+        else
+            if loras.y <= jumpoff + 55 then 
+                smoothJump = smoothJump + 1
+            end
+            loras.y = loras.y + smoothJump
+        end
+        print(goJump)
+        print('------------------------------------------')
+    end
+-- ------------------------------------------------------------------------------------
 
 end
 
 function makeGrass()
     for i=1,20,1 do
         trawa = display.newImage( grassGroup, trawaSheet, 1, 38 + 76*(i-1), display.actualContentHeight-40) 
+        trawa.myName = "trawa"
         physics.addBody(trawa,"static",{bounce=0.0,friction=0})
     end
 end
@@ -206,9 +243,13 @@ end
 function lorasIdzieWLewo( event )
     if event.phase == "began" or event.phase == "moved" then
         offset = 10
+        if lastMove ~= 'lewo' then loras:scale(-1,1) end 
         lastMove = 'lewo'
         goLeft = true
+        goRight = false
 		print "lewo"
+        loras:setSequence( "run" )  -- switch to "idle" sequence
+        loras:play()
 	else
         goLeft = false
 	end	
@@ -217,9 +258,13 @@ end
 function lorasIdzieWPrawo( event )
     if event.phase == "began" or event.phase == "moved" then
         offset = 10
+        if lastMove ~= 'prawo' and lastMove ~= 'mlem' then loras:scale(-1,1) end 
         lastMove = 'prawo'
         goRight = true
+        goLeft = false
 		print "prawo"
+        loras:setSequence( "run" )  -- switch to "idle" sequence
+        loras:play()
 	else
         goRight = false
 	end	
@@ -227,6 +272,12 @@ end
 
 function lorasSkacze( event )
     if event.phase == "began" or event.phase == "moved" then
+        if not goJump then 
+            jumpoff = loras.y - 200 
+            jumpMove = 'up'
+            smoothJump = 10
+            goJump = true
+        end
 		print "bounce"
 	else
 
@@ -241,6 +292,21 @@ function lorasSzczela( event )
 	end	
 end
 
+local function onCollision( event )
+
+	if ( event.phase == "began" ) then
+
+		local obj1 = event.object1
+		local obj2 = event.object2
+
+		if ( ( obj1.myName == "trawa" and obj2.myName == "loras" ) or
+			 ( obj1.myName == "loras" and obj2.myName == "trawa" ) )
+		then
+            -- loras wali w trawe
+            goJump = false
+		end
+	end
+end
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
@@ -279,11 +345,12 @@ function scene:create( event )
 	loras = display.newSprite(mainGroup, lorasSheet, lorasSequences)
 	loras.x = 640--250
 	loras.y = 360
+    loras.myName = "loras"
 
-    physics.addBody(loras,"dynamic",{bounce=0.0,friction=0,density=2})
+    physics.addBody(loras,"sensor",{bounce=0.0,friction=0,density=2})
 
 	loras:setSequence( "run" )  -- switch to "idle" sequence
-    loras:play()  -- play the new sequence
+    loras:setFrame(1)
 
     physics.start()
 
@@ -301,6 +368,7 @@ function scene:show( event )
 
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
+        Runtime:addEventListener( "collision", onCollision )
         gameLoopTimer = timer.performWithDelay( 33, gameLoop, 0 )
 	end
 end
@@ -316,6 +384,9 @@ function scene:hide( event )
 		-- Code here runs when the scene is on screen (but is about to go off screen)
         timer.cancel( gameLoopTimer )
 	elseif ( phase == "did" ) then
+        Runtime:removeEventListener( "collision", onCollision )
+		physics.pause()
+		composer.removeScene( "world1-1" )
 		-- Code here runs immediately after the scene goes entirely off screen
 
 	end
