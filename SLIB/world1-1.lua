@@ -8,13 +8,7 @@ local scene = composer.newScene()
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
 
-local function gotoGame()
-	composer.gotoScene( "world1-1", { time=800, effect="crossFade" } )
-end
 
-local function gotoHighScores()
-	composer.gotoScene( "highscores", { time=800, effect="crossFade" } )
-end
 
 
 -- -----------------------------------------------------------------------------------
@@ -27,23 +21,6 @@ function scene:create( event )
 	local sceneGroup = self.view
 	-- Code here runs when the scene is first created but has not yet appeared on screen
 
-	local background = display.newImageRect( sceneGroup, "menu_bg.png", 800, 1400 )
-	background.x = display.contentCenterX
-	background.y = display.contentCenterY
-	background.width = display.actualContentWidth
-    background.height = display.actualContentHeight
-
-
-	local title = display.newImageRect( sceneGroup, "title.png", 500, 80 )
-	title.x = display.contentCenterX
-	title.y = 200
-	title.width = display.actualContentWidth*0.8
-    title.height = display.actualContentWidth*0.8*80/500
-
-	local playButton = display.newText( sceneGroup, "Zaczynamy!!!", display.contentCenterX, 700, native.systemFont, 88 )
-	playButton:setFillColor( 0, 0, 0 )
-
-	playButton:addEventListener( "tap", gotoGame )
 end
 
 
