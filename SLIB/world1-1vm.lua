@@ -176,6 +176,7 @@ local smoothJump = 10
 --move world variables
 
 local lorasCanMove = true;
+local worldOffset = 0
 
 --other
 
@@ -310,15 +311,25 @@ function leftRightLoop()
             if lastMove == 'prawo' then
                 loras.x = loras.x + offset
             end
+        else
+            if lastMove == 'prawo' then
+                worldOffset = worldOffset + offset
+                print(worldOffset)
+            end
         end
 
         offset = offset - 0.5
     end
 
     if goLeft then loras.x = loras.x - offset end
-    
+
     if lorasCanMove then
         if goRight then loras.x = loras.x + offset end
+    else
+        if goRight then
+            worldOffset = worldOffset + offset
+            print(worldOffset)
+        end
     end
 
     if not goLeft and not goRight and offset <= 0 then
