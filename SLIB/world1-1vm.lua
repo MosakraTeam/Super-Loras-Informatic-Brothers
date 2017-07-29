@@ -415,6 +415,9 @@ function scene:create( event )
 	--background.width = display.actualContentWidth
     --background.height = display.actualContentHeight
 
+    local background = display.newRect(backGroup,display.actualContentWidth/2,display.actualContentHeight/2,display.actualContentWidth,display.actualContentHeight)
+	background:setFillColor(0,1,1,1);
+
     makeGrass()
     makeButtons()
 
