@@ -27,20 +27,17 @@ function scene:create( event )
 	local sceneGroup = self.view
 	-- Code here runs when the scene is first created but has not yet appeared on screen
 
-	local background = display.newImageRect( sceneGroup, "menu_bg.png", 800, 1400 )
-	background.x = display.contentCenterX
-	background.y = display.contentCenterY
-	background.width = display.actualContentWidth
-    background.height = display.actualContentHeight
+	local background = display.newRect(sceneGroup,display.actualContentWidth/2,display.actualContentHeight/2,display.actualContentWidth,display.actualContentHeight)
+	background:setFillColor(0,1,1,1);
 
+	local title = display.newImageRect( sceneGroup, "images/title.png", 640, 310 )
+	title.x = title.width/2 + 10
+	title.y = display.actualContentHeight/2 - 150
 
-	local title = display.newImageRect( sceneGroup, "title.png", 500, 80 )
-	title.x = display.contentCenterX
-	title.y = 200
-	title.width = display.actualContentWidth*0.8
-    title.height = display.actualContentWidth*0.8*80/500
+	local buttonBgd = display.newRect(sceneGroup,display.actualContentWidth/2+300,display.actualContentHeight/2-150,500,100)
+	buttonBgd:setFillColor(1,0,0,1);
 
-	local playButton = display.newText( sceneGroup, "Zaczynamy!!!", display.contentCenterX, 700, native.systemFont, 88 )
+	local playButton = display.newText( sceneGroup, "START", display.actualContentWidth/2+300, display.actualContentHeight/2-150, native.systemFont, 88 )
 	playButton:setFillColor( 0, 0, 0 )
 
 	playButton:addEventListener( "tap", gotoGame )
