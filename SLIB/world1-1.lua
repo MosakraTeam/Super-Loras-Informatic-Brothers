@@ -5,7 +5,6 @@ local scene = composer.newScene()
 
 local physics = require( "physics" )
 physics.start()
-physics.setGravity( 0, 0 )
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
@@ -56,7 +55,7 @@ local lorasSheetOptions = {
     }
 }
 
-local lorasSheet = graphics.newImageSheet( "images/loras.png", lorasSheetOptions )
+local lorasSheet = graphics.newImageSheet( "images/Loras.png", lorasSheetOptions )
 
 -- Configure image sequences
 local lorasSequences = {
@@ -70,7 +69,25 @@ local lorasSequences = {
     }
 }
 
+local trawaSheetOptions = {
+    frames = {
+        {   -- 1. trawa 1
+            x = 692,
+            y = 751,
+            width = 76,
+            height = 77,
+			sourceX = 0,
+            sourceY = 0,
+            sourceWidth = 0,
+            sourceHeight = 0
+        }
+    }
+}
+
+local trawaSheet = graphics.newImageSheet( "images/Ground.png", trawaSheetOptions )
+
 local loras
+local trawa
 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -101,12 +118,19 @@ function scene:create( event )
 	--background.width = display.actualContentWidth
     --background.height = display.actualContentHeight
 
+    trawa = display.newImage( mainGroup, trawaSheet, 1, display.actualContentWidth/2, display.actualContentHeight-100) 
+
 	loras = display.newSprite(mainGroup, lorasSheet, lorasSequences)
 	loras.x = 640--250
 	loras.y = 360
 
+    physics.addBody(loras)
+    physics.addBody(trawa,"static")
+
 	loras:setSequence( "run" )  -- switch to "idle" sequence
     loras:play()  -- play the new sequence
+
+    physics.start()
 end
 
 
