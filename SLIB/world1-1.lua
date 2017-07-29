@@ -105,6 +105,9 @@ function scene:create( event )
 	backGroup = display.newGroup()  -- Display group for the background image
 	sceneGroup:insert( backGroup )  -- Insert into the scene's view group
 
+    grassGroup = display.newGroup()
+	sceneGroup:insert( grassGroup ) 
+
 	mainGroup = display.newGroup()  -- Display group for the ship, asteroids, lasers, etc.
 	sceneGroup:insert( mainGroup )  -- Insert into the scene's view group
 
@@ -118,7 +121,13 @@ function scene:create( event )
 	--background.width = display.actualContentWidth
     --background.height = display.actualContentHeight
 
-    trawa = display.newImage( mainGroup, trawaSheet, 1, display.actualContentWidth/2, display.actualContentHeight-100) 
+    for i=1,20,1 do
+        trawa = display.newImage( mainGroup, trawaSheet, 1, 38 + 76*(i-1), display.actualContentHeight-40) 
+        physics.addBody(trawa,"static")
+        grassGroup:insert(trawa)
+    end
+
+    
 
 	loras = display.newSprite(mainGroup, lorasSheet, lorasSequences)
 	loras.x = 640--250
