@@ -140,14 +140,46 @@ local grassGroup
 local mainGroup
 local uiGroup
 
+local gameLoopTimer
+
+local goLeft = false
+local goRight = false
+local lastMove = 'lewo'
+
+local goJump = false
+
+local offset = 10
+
 -- -----------------------------------------------------------------------------------
 -- Mosaks functions
 -- -----------------------------------------------------------------------------------
 
+
+local function gameLoop()
+
+    local x, y = loras:getMassLocalCenter()
+
+    if not goLeft and not goRight and offset > 0 then
+        if lastMove == 'lewo' then
+            loras.x = loras.x - offset
+        end
+
+        if lastMove == 'prawo' then
+            loras.x = loras.x + offset
+        end
+
+        offset = offset - 0.5
+    end
+
+	if goLeft then loras.x = loras.x - offset end
+    if goRight then loras.x = loras.x + offset end
+
+end
+
 function makeGrass()
     for i=1,20,1 do
         trawa = display.newImage( grassGroup, trawaSheet, 1, 38 + 76*(i-1), display.actualContentHeight-40) 
-        physics.addBody(trawa,"static")
+        physics.addBody(trawa,"static",{bounce=0.0,friction=0})
     end
 end
 
@@ -155,16 +187,58 @@ function makeButtons()
 
     guzikLewo = display.newImage( uiGroup, guzikSheet, 1, 80, display.actualContentHeight-80) 
     guzikLewo.alpha = 0.7
+    guzikLewo:addEventListener( "touch", lorasIdzieWLewo )
 
     guzikPrawo = display.newImage( uiGroup, guzikSheet, 2, 210, display.actualContentHeight-80) 
     guzikPrawo.alpha = 0.7
+    guzikPrawo:addEventListener( "touch", lorasIdzieWPrawo )
 
     guzikA = display.newImage( uiGroup, guzikSheet, 3, display.actualContentWidth-210, display.actualContentHeight-80) 
     guzikA.alpha = 0.7
+    guzikA:addEventListener( "touch", lorasSkacze )
 
     guzikB = display.newImage( uiGroup, guzikSheet, 4, display.actualContentWidth-80, display.actualContentHeight-80) 
     guzikB.alpha = 0.7
+    guzikB:addEventListener( "touch", lorasSzczela )
 
+end
+
+function lorasIdzieWLewo( event )
+    if event.phase == "began" or event.phase == "moved" then
+        offset = 10
+        lastMove = 'lewo'
+        goLeft = true
+		print "lewo"
+	else
+        goLeft = false
+	end	
+end
+
+function lorasIdzieWPrawo( event )
+    if event.phase == "began" or event.phase == "moved" then
+        offset = 10
+        lastMove = 'prawo'
+        goRight = true
+		print "prawo"
+	else
+        goRight = false
+	end	
+end
+
+function lorasSkacze( event )
+    if event.phase == "began" or event.phase == "moved" then
+		print "bounce"
+	else
+
+	end	
+end
+
+function lorasSzczela( event )
+    if event.phase == "began" or event.phase == "moved" then
+		print "jeb"
+	else
+
+	end	
 end
 
 -- -----------------------------------------------------------------------------------
@@ -206,13 +280,13 @@ function scene:create( event )
 	loras.x = 640--250
 	loras.y = 360
 
-    physics.addBody(loras)
-    physics.addBody(trawa,"static")
+    physics.addBody(loras,"dynamic",{bounce=0.0,friction=0,density=2})
 
 	loras:setSequence( "run" )  -- switch to "idle" sequence
     loras:play()  -- play the new sequence
 
     physics.start()
+
 end
 
 
@@ -227,7 +301,7 @@ function scene:show( event )
 
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
-
+        gameLoopTimer = timer.performWithDelay( 33, gameLoop, 0 )
 	end
 end
 
@@ -240,7 +314,7 @@ function scene:hide( event )
 
 	if ( phase == "will" ) then
 		-- Code here runs when the scene is on screen (but is about to go off screen)
-
+        timer.cancel( gameLoopTimer )
 	elseif ( phase == "did" ) then
 		-- Code here runs immediately after the scene goes entirely off screen
 
