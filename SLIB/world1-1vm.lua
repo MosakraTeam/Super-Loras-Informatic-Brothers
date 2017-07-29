@@ -175,7 +175,7 @@ local smoothJump = 10
 
 --move world variables
 
-local lorasCanMove = true;
+local lorasCanMoveRight = true;
 local worldOffset = 0
 
 --other
@@ -185,7 +185,7 @@ local worldOffset = 0
 -- -----------------------------------------------------------------------------------
 
 function makeGrass()
-    for i=1,20,1 do
+    for i=1,200,1 do
         trawa = display.newImage( grassGroup, trawaSheet, 1, 38 + 76*(i-1), display.actualContentHeight-40) 
         trawa.myName = "trawa"
         physics.addBody(trawa,"static",{bounce=0.0,friction=0})
@@ -292,11 +292,18 @@ end
 -- Main Loop functions
 -- -----------------------------------------------------------------------------------
 
+function renderAllWorld()
+    for i=1,grassGroup.numChildren,1 do
+        grassGroup[i].x = grassGroup[i].x - worldOffset
+    end
+end
+
 function stopLorasStartWorld()
+    worldOffset = 0
     if loras.x >= display.actualContentWidth * 0.66 then
-        lorasCanMove = false
+        lorasCanMoveRight = false
     else
-        lorasCanMove = true
+        lorasCanMoveRight = true
     end
 end
 
@@ -307,7 +314,7 @@ function leftRightLoop()
             loras.x = loras.x - offset
         end
 
-        if lorasCanMove then
+        if lorasCanMoveRight then
             if lastMove == 'prawo' then
                 loras.x = loras.x + offset
             end
@@ -323,7 +330,7 @@ function leftRightLoop()
 
     if goLeft then loras.x = loras.x - offset end
 
-    if lorasCanMove then
+    if lorasCanMoveRight then
         if goRight then loras.x = loras.x + offset end
     else
         if goRight then
@@ -360,6 +367,7 @@ local function gameLoop()
     stopLorasStartWorld()
     leftRightLoop()
     jumpingLoop()
+    renderAllWorld()
 end
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
