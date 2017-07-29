@@ -57,7 +57,7 @@ local lorasSheetOptions = {
     }
 }
 
-local lorasSheet = graphics.newImageSheet( "images/Loras.png", lorasSheetOptions )
+local lorasSheet = graphics.newImageSheet( "images/Loras.gif", lorasSheetOptions )
 
 -- Configure image sequences
 local lorasSequences = {
@@ -132,7 +132,7 @@ local guzikSheetOptions = {
     }
 }
 
-local trawaSheet = graphics.newImageSheet( "images/Ground.png", trawaSheetOptions )
+local trawaSheet = graphics.newImageSheet( "images/Ground.gif", trawaSheetOptions )
 local guzikSheet = graphics.newImageSheet( "images/Guziouki.png", guzikSheetOptions )
 
 local loras
